@@ -1,0 +1,4 @@
+#include "mlist.h"
+int main() {
+	return 0;
+}
