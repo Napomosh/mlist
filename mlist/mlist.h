@@ -161,7 +161,7 @@ namespace ns {
 			cur = cur->_next;
 			rhs_cur = rhs_cur->_next;
 		}
-
+		//new comment
 		_tail = cur;
 
 		return *this;
