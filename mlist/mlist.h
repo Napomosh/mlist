@@ -77,6 +77,22 @@ namespace ns {
 		**/
 		void push_front(const T& value);
 
+		/**
+		*	Delete element from the end of the list
+		*	@param none
+		*	@return none
+		*	@exception none
+		**/
+		void pop_back();
+
+		/**
+		*	Delete element from the begin of the list
+		*	@param none
+		*	@return none
+		*	@exception none
+		**/
+		void pop_front();
+
 		//friend std::ostream& operator<<(std::ostream& out, const mlist& list) {
 		//	auto cur = list._head;
 		//	while (cur->_next != nullptr) {
@@ -96,6 +112,7 @@ namespace ns {
 
 			Node(const T& value = *(new T()), Node* next = nullptr, Node* prev = nullptr) :
 				_value(value), _next(next), _prev(prev) {}
+			~Node() {}
 		};
 
 		Node<T>* _head;
@@ -154,14 +171,14 @@ namespace ns {
 		Node<T>* rhs_cur = rhs._head;
 		Node<T>* cur = new Node<T>();
 		_head = cur;
-		while (rhs_cur != nullptr) {
+		while (rhs_cur->_next != nullptr) {
 			cur->_value = rhs_cur->_value;
 			cur->_next = new Node<T>();
-			cur->_prev = cur;
+			cur->_next->_prev = cur;
 			cur = cur->_next;
 			rhs_cur = rhs_cur->_next;
 		}
-		//new comment
+		cur->_value = rhs_cur->_value;
 		_tail = cur;
 
 		return *this;
@@ -193,6 +210,24 @@ namespace ns {
 		_head->_prev = tmp;
 		_head = tmp;
 		_size++;
+	}
+
+	template<class T>
+	void mlist<T>::pop_back() {
+		Node<T>* tmp = _tail->_prev;
+		tmp->_next = nullptr;
+		delete _tail;
+		_tail = tmp;
+		_size--;
+	}
+
+	template<class T>
+	void mlist<T>::pop_front() {
+		Node<T>* tmp = _head->_next;
+		tmp->_prev = nullptr;
+		delete _head;
+		_head = tmp;
+		_size--;
 	}
 };
 #endif // _MLIST_H_
