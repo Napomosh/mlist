@@ -18,6 +18,39 @@ namespace ns {
 	*	Implementation of STL container double linked list for train my skill in
 	*	C++ programming and writing code documentation.
 	**/
+
+	template<class T>
+	class Node {
+	private:
+		T _value;
+		Node* _next;
+		Node* _prev;
+
+	public:
+		Node(const T& value = *(new T()), Node* next = nullptr, Node* prev = nullptr) :
+			_value(value), _next(next), _prev(prev) {}
+		~Node() {}
+
+		Node<T>* get_next() {
+			return _next;
+		}
+		void set_next(Node<T>* value) {
+			_next = value;
+		}
+		Node<T>* get_prev() {
+			return _prev;
+		}
+		void set_prev(Node<T>* value) {
+			_prev = value;
+		}
+		T& get_value() {
+			return _value;
+		}
+		void set_value(const T& value) {
+			_value = value;
+		}
+	};
+
 	template<class T>
 	class mlist {
 	public:
@@ -93,17 +126,8 @@ namespace ns {
 		**/
 		void pop_front();
 
-		//friend std::ostream& operator<<(std::ostream& out, const mlist& list) {
-		//	auto cur = list._head;
-		//	while (cur->_next != nullptr) {
-		//		out << cur->_value << " ";
-		//		cur = cur->_next;
-		//	}
-		//	return out;
-		//}
-
 	private:
-		template<class T>
+		/*template<class T>
 		class Node {
 		public:
 			T _value;
@@ -113,7 +137,7 @@ namespace ns {
 			Node(const T& value = *(new T()), Node* next = nullptr, Node* prev = nullptr) :
 				_value(value), _next(next), _prev(prev) {}
 			~Node() {}
-		};
+		};*/
 
 		Node<T>* _head;
 		Node<T>* _tail;
@@ -124,8 +148,8 @@ namespace ns {
 	void mlist<T>::print_list() {
 		Node<T>* cur = _head;
 		while (cur != nullptr) {
-			std::cout << cur->_value << " ";
-			cur = cur->_next;
+			std::cout << cur->get_value() << " ";
+			cur = cur->get_next();
 		}
 	}
 
@@ -137,9 +161,9 @@ namespace ns {
 		Node<T>* cur = new Node<T>();
 		_head = cur;
 		for (size_t i = 1; i < _size; i++) {
-			cur->_next = new Node<T>();
-			cur->_next->_prev = cur;
-			cur = cur->_next;
+			cur->set_next(new Node<T>());
+			cur->get_next()->set_next(cur);
+			cur = cur->get_next();
 		}
 		_tail = cur;
 	}
@@ -156,10 +180,10 @@ namespace ns {
 			Node<T>* cur = new Node<T>();
 			this->_head = cur;
 			Node<T>* rhs_cur = mlist._head;
-			while (rhs_cur->_next != nullptr) {
-				cur->_value = rhs_cur->_value;
-				cur->_next = new Node<T>();
-				cur = cur->_next;
+			while (rhs_cur->get_next() != nullptr) {
+				cur->set_value(rhs_cur->get_value());
+				cur->set_next(new Node<T>());
+				cur = cur->get_next();
 			}
 			this->_tail = cur;
 		}
@@ -171,14 +195,14 @@ namespace ns {
 		Node<T>* rhs_cur = rhs._head;
 		Node<T>* cur = new Node<T>();
 		_head = cur;
-		while (rhs_cur->_next != nullptr) {
-			cur->_value = rhs_cur->_value;
-			cur->_next = new Node<T>();
-			cur->_next->_prev = cur;
-			cur = cur->_next;
-			rhs_cur = rhs_cur->_next;
+		while (rhs_cur->get_next() != nullptr) {
+			cur->set_value(rhs_cur->get_value());
+			cur->set_next(new Node<T>());
+			cur->get_next()->set_prev(cur);
+			cur = cur->get_next();
+			rhs_cur = rhs_cur->get_next();
 		}
-		cur->_value = rhs_cur->_value;
+		cur->set_value(rhs_cur->get_value());
 		_tail = cur;
 
 		return *this;
@@ -187,11 +211,11 @@ namespace ns {
 	template<class T>
 	mlist<T>::~mlist() {
 		Node<T>* cur = this->_head;
-		while (cur->_next != nullptr) {
-			if (cur->_prev != nullptr) {
-				delete cur->_prev;
+		while (cur->get_next() != nullptr) {
+			if (cur->get_prev() != nullptr) {
+				delete cur->get_prev();
 			}
-			cur = cur->_next;
+			cur = cur->get_next();
 		}
 		delete cur;
 	}
@@ -199,7 +223,7 @@ namespace ns {
 	template<class T>
 	void mlist<T>::push_back(const T& value) {
 		Node<T>* tmp = new Node<T>(value, nullptr, _tail);
-		_tail->_next = tmp;
+		_tail->set_next(tmp);
 		_tail = tmp;
 		_size++;
 	}
@@ -207,15 +231,15 @@ namespace ns {
 	template<class T>
 	void mlist<T>::push_front(const T& value) {
 		Node<T>* tmp = new Node<T>(value, _head, nullptr);
-		_head->_prev = tmp;
+		_head->set_prev(tmp);
 		_head = tmp;
 		_size++;
 	}
 
 	template<class T>
 	void mlist<T>::pop_back() {
-		Node<T>* tmp = _tail->_prev;
-		tmp->_next = nullptr;
+		Node<T>* tmp = _tail->get_prev();
+		tmp->set_next(nullptr);
 		delete _tail;
 		_tail = tmp;
 		_size--;
@@ -223,8 +247,8 @@ namespace ns {
 
 	template<class T>
 	void mlist<T>::pop_front() {
-		Node<T>* tmp = _head->_next;
-		tmp->_prev = nullptr;
+		Node<T>* tmp = _head->get_next();
+		tmp->set_prev(nullptr);
 		delete _head;
 		_head = tmp;
 		_size--;
